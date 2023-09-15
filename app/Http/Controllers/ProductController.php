@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -15,6 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
+        // Retrieve and return a list of products with their associated categories
         return Product::with('category')->get();
     }
 
@@ -31,8 +31,10 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
+        // Validate the incoming request data using the defined ProductRequest rules
         $validator = Validator::make($request->all(), $request->rules());
 
+        // If validation fails, return a JSON response with validation error messages
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -41,6 +43,7 @@ class ProductController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // Create a new product using the request data and return a success response
         $product = Product::create($request->all());
 
         return response()->json([
@@ -56,18 +59,20 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         try {
+            // Load the associated category and return the product details
             $product->load('category');
-            
+
             return response()->json([
                 'status' => 'success',
                 'data' => $product,
             ]);
         } catch (\Throwable $e) {
+            // Handle any errors that may occur during the process and return an error response
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error obtaining the product',
-                'error' => $e->getMessage(), 
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); 
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -84,8 +89,10 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
+        // Validate the incoming request data using the defined ProductRequest rules
         $validator = Validator::make($request->all(), $request->rules());
 
+        // If validation fails, return a JSON response with validation error messages
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -94,6 +101,7 @@ class ProductController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // Update the product with the request data and return a success response
         $product->update($request->all());
 
         return response()->json([
@@ -108,15 +116,17 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
+            // Delete the specified product and return a success response
             $product->delete();
-            
+
             return response()->json(['status' => 'success']);
         } catch (\Throwable $e) {
+            // Handle any errors that may occur during the process and return an error response
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error deleting the product',
-                'error' => $e->getMessage(), 
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR); 
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -9,11 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Get the authenticated user.
+     */
     public function getAuthUser()
     {
         return auth()->user();
     }
 
+    /**
+     * Register a new user.
+     */
     public function register(RegisterRequest $request)
     {
         try {
@@ -33,6 +39,9 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Log in a user.
+     */
     public function login(LoginRequest $request)
     {
         if (User::where("email", $request->email)->first()) $user = User::where("email", $request->email)->first();
@@ -61,6 +70,9 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Log out the authenticated user.
+     */
     public function logout()
     {
         if (auth()->check()) {
